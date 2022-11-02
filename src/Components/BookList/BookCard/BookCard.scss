@@ -1,0 +1,59 @@
+.cardFrame {
+    display: flex;
+    justify-content: flex-start;
+    flex-direction: column;
+    align-items: center;
+    width: 25%;
+    margin: 20px;
+    background-color: #eee;
+    box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.5);
+    border-radius: 10px;
+    transform: scale(1);
+    transition: ease-in-out 1s;
+
+    .bookCover {
+        width: 100%;
+        border-radius: 10px 10px 0px 0px;
+    }
+
+    &:hover {
+        transform: scale(1.05);
+        transition: ease-in-out 1s;
+    }
+
+    .Cardsec {
+        margin-top: 5px;
+        display: flex;
+        justify-content: flex-start;
+        direction: rtl;
+        width: 100%;
+        padding-right: 10px;
+    }
+
+    .rating {
+        color: goldenrod;
+        margin-bottom: 10px;
+    }
+
+    .authors {
+        flex-direction: column;
+
+        ul {
+            padding-right: 15px;
+        }
+    }
+}
+
+
+
+@media(max-width:978px) {
+    .cardFrame {
+        width: 40%;
+    }
+}
+
+@media(max-width:550px) {
+    .cardFrame {
+        width: 90%;
+    }
+}

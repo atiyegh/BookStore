@@ -1,0 +1,38 @@
+.container{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 30px 40px;
+    flex-wrap: wrap;
+    width: 100%;
+}
+@media (max-width:1120px){
+    .container{
+        font-size: 0.9em;
+        padding: 30px 20px;
+    }
+}
+
+@media (max-width:978px ){
+    .container{
+        font-size: 1em;
+        padding:20px 10px;
+    }
+}
+
+@media (max-width:800px ){
+    .container{
+        font-size: 0.9em;
+    }
+}
+@media (max-width:550px ){
+    .container{
+        font-size: 1em;
+    }
+}
+@media (max-width:450px ){
+    .container{
+        font-size: 0.9em;
+    }
+}
+
