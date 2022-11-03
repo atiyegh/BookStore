@@ -10,6 +10,7 @@ function Home() {
     const [bookList, setBookList] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [isError, setIsError] = useState(false);
+
     useEffect(() => {
         getbookList()
     }, [])
@@ -39,15 +40,23 @@ function Home() {
                         <LoadingOutlined />
                         <p>لیست کتابها در حال بارگذاری است...</p>
                     </div> :
-                    bookList.map((book) => {
-                        //console.log(book)
-                        return <BookCard
-                            coverUri={book.coverUri}
-                            title={book.title}
-                            authours={book.authors}
-                            price={book.price}
-                            rating={book.rating}
-                        />
+                    bookList.map((book,index) => {
+                        
+                        return (
+                                <BookCard
+                                    coverUri={book.coverUri}
+                                    title={book.title}
+                                    authours={book.authors}
+                                    price={book.price}
+                                    rating={book.rating}
+                                    publisher={book.publisher}
+                                    physicalPrice={book.physicalPrice}
+                                    numberOfPages={book.numberOfPages}
+                                    description={book.description}
+                                    id={book.id}
+                                />
+                        )
+
                     })
             }
             {

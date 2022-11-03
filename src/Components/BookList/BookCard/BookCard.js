@@ -1,17 +1,20 @@
 import React, { useEffect,useState } from 'react';
 import './BookCard.scss';
 import { StarOutlined, StarFilled } from '@ant-design/icons';
+import {useNavigate} from 'react-router-dom'
+function BookCard({ coverUri, title, authours, price, rating,
+    publisher,physicalPrice,numberOfPages,description ,id}) {
 
-function BookCard({ coverUri, title, authours, price, rating }) {
     const [starRate, setStarRate] = useState([0,0,0,0,0])
-    //console.log(coverUri, title, authours, price, rating)
 
+    //console.log(coverUri, title, authours, price, rating)
+    let navigate = useNavigate();
     useEffect(()=>{
         showRating();
-        console.log(starRate)
+        console.log('starRate')
     },[])
 
-    const showRating = () => {
+    const showRating = (rating) => {
         switch (true) {
             case (rating >= 1 && rating < 2) :
                 setStarRate([1,0,0,0,0]);
@@ -32,8 +35,25 @@ function BookCard({ coverUri, title, authours, price, rating }) {
                 setStarRate([0,0,0,0,0]);
         }
     }
+    const navToDetailBook=()=>{
+        navigate(`/${id}`, { state: {
+            coverUri,
+            title,
+            authours,
+            price,
+            rating,
+            publisher,
+            physicalPrice,
+            numberOfPages,
+            description,
+            id
+        }});
+        console.log(id)
+    }
+
+    
     return (
-        <div className='cardFrame'>
+        <div className='cardFrame'onClick={navToDetailBook}>
             <img alt={title} src={coverUri} className='bookCover' />
 
             <p className='Cardsec'>
