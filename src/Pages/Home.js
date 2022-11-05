@@ -5,6 +5,7 @@ import '../Style/Home.scss';
 import notify from "../Toastify/Toast";
 import { LoadingOutlined } from '@ant-design/icons';
 import { Alert } from 'antd';
+import {Error_Messages} from '../utils/Errors/ErrorMessages';
 
 function Home() {
     const [bookList, setBookList] = useState([]);
@@ -22,7 +23,7 @@ function Home() {
             //console.log([...books])
             setIsLoading(false)
             setBookList([...books])
-            //console.log(bookList)
+            console.log(bookList)
 
         } catch (error) {
             setIsLoading(false)
@@ -46,7 +47,7 @@ function Home() {
                                 <BookCard
                                     coverUri={book.coverUri}
                                     title={book.title}
-                                    authours={book.authors}
+                                    authors={book.authors}
                                     price={book.price}
                                     rating={book.rating}
                                     publisher={book.publisher}
@@ -61,8 +62,8 @@ function Home() {
             }
             {
                 isError && <Alert
-                    message="خطای شبکه"
-                    description=".به اینترنت متصل نیستید. اتصال خود به اینترنت را بررسی کرده و مجدداً امتحان نمایید"
+                    message="خطای اتصال به شبکه"
+                    description={Error_Messages.NETWORK_CONNECTION_ERROR.fa}
                     type="error" />
             }
         </div>
