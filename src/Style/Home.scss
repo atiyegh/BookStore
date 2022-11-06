@@ -5,24 +5,41 @@
     padding: 30px 40px;
     flex-wrap: wrap;
     width: 100%;
-    .loadingFrame{
+    flex-direction: column;
+    // flex-direction: column;
+    .Filterbox{
         display: flex;
-        flex-direction: column;
         justify-content: center;
         align-items: center;
-        margin-top: 50px;
-        p{
-            margin-top: 15px;
-            font-size: 0.8em;
+        width: 35%;
+    }
+    .listBox{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-wrap: wrap;
+
+        .loadingFrame{
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            margin-top: 50px;
+            p{
+                margin-top: 15px;
+                font-size: 0.8em;
+            }
         }
     }
-
 }
 .anticon{
     svg{
         width: 3em;
         height: 3em;
     }
+}
+.ant-select-arrow {
+    font-size: 4px !important;
 }
 @media (max-width:1120px){
     .container{
