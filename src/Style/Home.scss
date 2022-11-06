@@ -12,6 +12,11 @@
         justify-content: center;
         align-items: center;
         width: 35%;
+        span{
+            svg{
+                font-size: 8px;
+            }
+        }
     }
     .listBox{
         display: flex;
@@ -38,9 +43,11 @@
         height: 3em;
     }
 }
-.ant-select-arrow {
+svg.ant-select-arrow {
     font-size: 4px !important;
 }
+
+
 @media (max-width:1120px){
     .container{
         font-size: 0.9em;

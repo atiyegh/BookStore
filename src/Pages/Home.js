@@ -3,12 +3,13 @@ import { getBookList } from '../utils/api';
 import BookCard from '../Components/BookList/BookCard/BookCard';
 import '../Style/Home.scss';
 import notify from "../Toastify/Toast";
-import { LoadingOutlined } from '@ant-design/icons';
+import { LoadingOutlined, ClearOutlined } from '@ant-design/icons';
 import { Alert } from 'antd';
 import { Error_Messages } from '../utils/Errors/ErrorMessages';
 import { TreeSelect } from 'antd';
 
 const treeData = [
+
     {
         title: 'صوتی',
         value: 'Voice',
@@ -39,6 +40,7 @@ function Home() {
 
 
     useEffect(() => {
+        console.log('bookType',bookType)
         getbookList();
         determineFileType();
     }, [])
@@ -85,6 +87,10 @@ function Home() {
         }
     }
 
+    const clearFilter=()=>{
+        setBookType(undefined)
+    }
+
     return (
         <div className='container'>
             <div className='Filterbox'>
@@ -102,6 +108,7 @@ function Home() {
                     treeDefaultExpandAll
                     onChange={changeBookType}
                 />
+                <ClearOutlined onClick={clearFilter}/>
             </div>
             <div className='listBox'>
                 {
