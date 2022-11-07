@@ -9,10 +9,7 @@ import { Error_Messages } from '../utils/Errors/ErrorMessages';
 import { TreeSelect } from 'antd';
 
 const treeData = [
-    {
-        title:'همه',
-        value:'All'
-    },
+
     {
         title: 'صوتی',
         value: 'Voice',
@@ -38,33 +35,31 @@ function Home() {
     const [bookList, setBookList] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [isError, setIsError] = useState(false);
-    const [bookType, setBookType] = useState('All');
-    const [fileType,setFileType]=useState([]);
-    const [bookListWithFilter,setBookListWithFilter]=useState([]);
+    const [bookType, setBookType] = useState('');
+
 
     useEffect(() => {
         console.log('bookType',bookType)
-        getbookList();
-        determineFileType();
-    }, [bookType])
+        getbookList();        
+    }, [])
 
-    const determineFileType=()=>{
-        let fileTypeBook=[];
-
-        const getbooksFileType=()=>bookList.map((book)=>{
+    const determineFileType=(book)=>{
+        let fileTypeBook='';
+        const getbooksFileType=(book)=>{
+        
             const files=book.files.filter((file)=>file.type===3)
             //console.log(files)
             if(files.length>0){
-                fileTypeBook.push('epub')
+                fileTypeBook='epub'
+                //console.log(fileTypeBook)
             }else{
-                fileTypeBook.push('pdf')
+                fileTypeBook='pdf'
+                //console.log(fileTypeBook)
             }
-        })
+        }
+        getbooksFileType(book);
 
-        getbooksFileType();
-        console.log(fileTypeBook);
-        setFileType([...fileTypeBook]);
-        console.log(fileType);
+        return fileTypeBook
         
     };
 
@@ -72,7 +67,6 @@ function Home() {
         setBookType(newValue);
         console.log(bookType);
         console.log(newValue);
-        getBookListWithFilter();
     };
 
     const getbookList = async () => {
@@ -82,8 +76,8 @@ function Home() {
             //console.log([...books])
             setIsLoading(false)
             setBookList([...books])
-            console.log(bookList)            
-            getBookListWithFilter()
+            console.log([...bookList])
+
         } catch (error) {
             setIsLoading(false)
             console.log(error)
@@ -92,32 +86,8 @@ function Home() {
         }
     }
 
-    const getBookListWithFilter=()=>{
-
-        if(bookType==='All'){
-            setBookListWithFilter(bookList)
-        }else{
-            const filteredbookList=bookList.filter((book,index)=>{
-                if(book.type==='Text'){
-                    if(bookType==='Text'){
-                        return true
-                    }
-                    console.log('fileType',fileType[index])
-                    console.log(bookType)
-                    console.log(fileType[index]===bookType)
-                    return fileType[index]===bookType
-                }else{
-                    console.log(book.type==='Voice')
-                    return book.type==='Voice'
-                }
-            })
-            console.log(filteredbookList)
-            setBookListWithFilter(filteredbookList)
-        }        
-    }
-
     const clearFilter=()=>{
-        setBookType('All')
+        setBookType('')
         console.log(bookType)
     }
 
@@ -147,7 +117,22 @@ function Home() {
                             <LoadingOutlined />
                             <p>لیست کتابها در حال بارگذاری است...</p>
                         </div> :
-                        bookListWithFilter.map((book) => {
+                        bookList.filter((book)=>{
+                            if(bookType && book.type==='Text'){
+                                if(bookType === 'Text'){
+                                    return true
+                                }
+                                const bookTypePerBook=determineFileType(book);
+                                return bookTypePerBook===bookType
+
+                            }else if(bookType && book.type==='Voice'){
+                                return book.type===bookType
+
+                            }else{
+                                return true;
+                            }
+                    })
+                        .map((book) => {
                             //console.log(book)
                             return (
                                 <BookCard
