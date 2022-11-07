@@ -9,7 +9,10 @@ import { Error_Messages } from '../utils/Errors/ErrorMessages';
 import { TreeSelect } from 'antd';
 
 const treeData = [
-
+    {
+        title:'همه',
+        value:'All'
+    },
     {
         title: 'صوتی',
         value: 'Voice',
@@ -35,15 +38,15 @@ function Home() {
     const [bookList, setBookList] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [isError, setIsError] = useState(false);
-    const [bookType, setBookType] = useState();
+    const [bookType, setBookType] = useState('All');
     const [fileType,setFileType]=useState([]);
-
+    const [bookListWithFilter,setBookListWithFilter]=useState([]);
 
     useEffect(() => {
         console.log('bookType',bookType)
         getbookList();
         determineFileType();
-    }, [])
+    }, [bookType])
 
     const determineFileType=()=>{
         let fileTypeBook=[];
@@ -59,15 +62,17 @@ function Home() {
         })
 
         getbooksFileType();
-        //console.log(fileTypeBook);
+        console.log(fileTypeBook);
         setFileType([...fileTypeBook]);
-        //console.log(fileType);
+        console.log(fileType);
         
     };
 
     const changeBookType = (newValue) => {
-        console.log(newValue);
         setBookType(newValue);
+        console.log(bookType);
+        console.log(newValue);
+        getBookListWithFilter();
     };
 
     const getbookList = async () => {
@@ -77,8 +82,8 @@ function Home() {
             //console.log([...books])
             setIsLoading(false)
             setBookList([...books])
-            console.log(bookList)
-
+            console.log(bookList)            
+            getBookListWithFilter()
         } catch (error) {
             setIsLoading(false)
             console.log(error)
@@ -87,8 +92,33 @@ function Home() {
         }
     }
 
+    const getBookListWithFilter=()=>{
+
+        if(bookType==='All'){
+            setBookListWithFilter(bookList)
+        }else{
+            const filteredbookList=bookList.filter((book,index)=>{
+                if(book.type==='Text'){
+                    if(bookType==='Text'){
+                        return true
+                    }
+                    console.log('fileType',fileType[index])
+                    console.log(bookType)
+                    console.log(fileType[index]===bookType)
+                    return fileType[index]===bookType
+                }else{
+                    console.log(book.type==='Voice')
+                    return book.type==='Voice'
+                }
+            })
+            console.log(filteredbookList)
+            setBookListWithFilter(filteredbookList)
+        }        
+    }
+
     const clearFilter=()=>{
-        setBookType(undefined)
+        setBookType('All')
+        console.log(bookType)
     }
 
     return (
@@ -117,15 +147,7 @@ function Home() {
                             <LoadingOutlined />
                             <p>لیست کتابها در حال بارگذاری است...</p>
                         </div> :
-                        bookList.filter((book,index)=>{
-                            if(book.type==='Text'){
-                                console.log(fileType[index]===bookType)
-                                return fileType[index]===bookType
-                            }else {
-                                console.log(book.type==='Voice')
-                                return book.type==='Voice'
-                            }
-                        }).map((book) => {
+                        bookListWithFilter.map((book) => {
                             //console.log(book)
                             return (
                                 <BookCard
