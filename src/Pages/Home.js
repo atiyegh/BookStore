@@ -7,6 +7,8 @@ import { LoadingOutlined, ClearOutlined } from '@ant-design/icons';
 import { Alert } from 'antd';
 import { Error_Messages } from '../utils/Errors/ErrorMessages';
 import { TreeSelect } from 'antd';
+import { DownOutlined, SmileOutlined } from '@ant-design/icons';
+import { Dropdown, Menu, Space } from 'antd';
 
 const treeData = [
 
@@ -30,6 +32,39 @@ const treeData = [
     }
 ];
 
+const items = [
+    {
+        key: '1',
+        type: 'group',
+        label: 'صعودی',
+        children: [
+            {
+                key: '1-1',
+                label: 'بر اساس قیمت',
+            },
+            {
+                key: '1-2',
+                label: 'بر اساس امتیاز',
+            },
+        ],
+    },
+    {
+        key: '2',
+        type: 'group',
+        label: 'نزولی',
+        children: [
+            {
+                key: '2-1',
+                label: 'بر اساس قیمت',
+            },
+            {
+                key: '2-2',
+                label: 'بر اساس امتیاز',
+            },
+        ],
+    }
+];
+
 
 function Home() {
     const [bookList, setBookList] = useState([]);
@@ -39,28 +74,28 @@ function Home() {
 
 
     useEffect(() => {
-        console.log('bookType',bookType)
-        getbookList();        
+        console.log('bookType', bookType)
+        getbookList();
     }, [])
 
-    const determineFileType=(book)=>{
-        let fileTypeBook='';
-        const getbooksFileType=(book)=>{
-        
-            const files=book.files.filter((file)=>file.type===3)
+    const determineFileType = (book) => {
+        let fileTypeBook = '';
+        const getbooksFileType = (book) => {
+
+            const files = book.files.filter((file) => file.type === 3)
             //console.log(files)
-            if(files.length>0){
-                fileTypeBook='epub'
+            if (files.length > 0) {
+                fileTypeBook = 'epub'
                 //console.log(fileTypeBook)
-            }else{
-                fileTypeBook='pdf'
+            } else {
+                fileTypeBook = 'pdf'
                 //console.log(fileTypeBook)
             }
         }
         getbooksFileType(book);
 
         return fileTypeBook
-        
+
     };
 
     const changeBookType = (newValue) => {
@@ -86,7 +121,7 @@ function Home() {
         }
     }
 
-    const clearFilter=()=>{
+    const clearFilter = () => {
         setBookType('')
         console.log(bookType)
     }
@@ -108,7 +143,21 @@ function Home() {
                     treeDefaultExpandAll
                     onChange={changeBookType}
                 />
-                <ClearOutlined onClick={clearFilter}/>
+                <ClearOutlined onClick={clearFilter} />
+            </div>
+            <div className='sortBox'>
+                <Dropdown
+                    menu={{
+                        items,
+                    }}
+                >
+                    <p onClick={(e) => e.preventDefault()}>
+                        <Space>
+                            مرتب سازی
+                            <DownOutlined />
+                        </Space>
+                    </p>
+                </Dropdown>
             </div>
             <div className='listBox'>
                 {
@@ -117,39 +166,39 @@ function Home() {
                             <LoadingOutlined />
                             <p>لیست کتابها در حال بارگذاری است...</p>
                         </div> :
-                        bookList.filter((book)=>{
-                            if(bookType && book.type==='Text'){
-                                if(bookType === 'Text'){
+                        bookList.filter((book) => {
+                            if (bookType && book.type === 'Text') {
+                                if (bookType === 'Text') {
                                     return true
                                 }
-                                const bookTypePerBook=determineFileType(book);
-                                return bookTypePerBook===bookType
+                                const bookTypePerBook = determineFileType(book);
+                                return bookTypePerBook === bookType
 
-                            }else if(bookType && book.type==='Voice'){
-                                return book.type===bookType
+                            } else if (bookType && book.type === 'Voice') {
+                                return book.type === bookType
 
-                            }else{
+                            } else {
                                 return true;
                             }
-                    })
-                        .map((book) => {
-                            //console.log(book)
-                            return (
-                                <BookCard
-                                    coverUri={book.coverUri}
-                                    title={book.title}
-                                    authors={book.authors}
-                                    price={book.price}
-                                    rating={book.rating}
-                                    publisher={book.publisher}
-                                    physicalPrice={book.physicalPrice}
-                                    numberOfPages={book.numberOfPages}
-                                    description={book.description}
-                                    id={book.id}
-                                />
-                            )
-
                         })
+                            .map((book) => {
+                                //console.log(book)
+                                return (
+                                    <BookCard
+                                        coverUri={book.coverUri}
+                                        title={book.title}
+                                        authors={book.authors}
+                                        price={book.price}
+                                        rating={book.rating}
+                                        publisher={book.publisher}
+                                        physicalPrice={book.physicalPrice}
+                                        numberOfPages={book.numberOfPages}
+                                        description={book.description}
+                                        id={book.id}
+                                    />
+                                )
+
+                            })
                 }
             </div>
 

@@ -18,6 +18,16 @@
             }
         }
     }
+    
+    .sortBox{
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+        direction: rtl;
+        margin-top: 15px;
+        width: 100%;
+    }
+
     .listBox{
         display: flex;
         justify-content: center;
@@ -47,6 +57,11 @@ svg.ant-select-arrow {
     font-size: 4px !important;
 }
 
+.anticon-down{
+    svg{
+        font-size: 6px!important;
+    }
+}
 
 @media (max-width:1120px){
     .container{
