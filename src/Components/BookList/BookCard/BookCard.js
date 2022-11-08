@@ -11,10 +11,9 @@ function BookCard({ coverUri, title, authors, price, rating,
     //console.log(coverUri, title, authours, price, rating)
     let navigate = useNavigate();
     useEffect(()=>{
+        console.log(rating)
+    },[rating])
 
-    },[])
-
-    
     const navToDetailBook=()=>{
         navigate(`/${id}`, { state: {
             coverUri,

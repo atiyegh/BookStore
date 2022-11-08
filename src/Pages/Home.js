@@ -10,6 +10,7 @@ import { TreeSelect } from 'antd';
 import { DownOutlined, SmileOutlined } from '@ant-design/icons';
 import { Dropdown, Menu, Space } from 'antd';
 
+
 const treeData = [
 
     {
@@ -32,37 +33,35 @@ const treeData = [
     }
 ];
 
-const items = [
+const treeDataSort = [
     {
-        key: '1',
-        type: 'group',
-        label: 'صعودی',
+        title: 'صعودی',
+        value: '0-0',
         children: [
             {
-                key: '1-1',
-                label: 'بر اساس قیمت',
+                title: 'بر اساس قیمت',
+                value: 'ascPrice',
             },
             {
-                key: '1-2',
-                label: 'بر اساس امتیاز',
+                title: 'بر اساس امتیاز',
+                value: 'ascRating',
             },
         ],
     },
     {
-        key: '2',
-        type: 'group',
-        label: 'نزولی',
+        title: 'نزولی',
+        value: '0-1',
         children: [
             {
-                key: '2-1',
-                label: 'بر اساس قیمت',
+                title: 'بر اساس قیمت',
+                value: 'descPrice',
             },
             {
-                key: '2-2',
-                label: 'بر اساس امتیاز',
+                title: 'بر اساس امتیاز',
+                value: 'descRating',
             },
         ],
-    }
+    },
 ];
 
 
@@ -71,12 +70,50 @@ function Home() {
     const [isLoading, setIsLoading] = useState(false);
     const [isError, setIsError] = useState(false);
     const [bookType, setBookType] = useState('');
+    const [sortConfig, setSortConfig] = useState({
+        type: '',
+        basedOn: ''
+    })
 
+    const onChangeSort = (newValue) => {
+        console.log(newValue);
+        const sortvalue={};
+
+        switch(newValue){
+            case 'ascPrice' :
+                sortvalue.type='asc';
+                sortvalue.basedOn='price';
+                setSortConfig({...sortvalue});
+                console.log(sortvalue)
+                break;
+            case 'ascRating' :
+                sortvalue.type='asc';
+                sortvalue.basedOn='rating';
+                setSortConfig({...sortvalue});
+                console.log(sortvalue)
+                break;
+            case 'descPrice' :
+                sortvalue.type='des';
+                sortvalue.basedOn='price';
+                setSortConfig({...sortvalue});
+                console.log(sortvalue)
+                break;
+            case 'descRating' :
+                sortvalue.type='des';
+                sortvalue.basedOn='rating';
+                setSortConfig({...sortvalue});
+                console.log(sortvalue)
+                break;
+        }
+    };
+    
 
     useEffect(() => {
         console.log('bookType', bookType)
         getbookList();
     }, [])
+
+
 
     const determineFileType = (book) => {
         let fileTypeBook = '';
@@ -125,7 +162,20 @@ function Home() {
         setBookType('')
         console.log(bookType)
     }
+    const sortListSetting=(a,b)=>{
 
+        switch(true){
+            case(sortConfig.type==='asc' && sortConfig.basedOn==='price'):
+                return a.price-b.price;
+            case(sortConfig.type==='asc' && sortConfig.basedOn==='rating'):
+                return a.rating-b.rating;
+            case(sortConfig.type==='des' && sortConfig.basedOn==='price'):
+                return b.price-a.price;
+            case(sortConfig.type==='des' && sortConfig.basedOn==='rating'):
+                return b.rating-a.rating;
+        }
+
+    }
     return (
         <div className='container'>
             <div className='Filterbox'>
@@ -146,18 +196,20 @@ function Home() {
                 <ClearOutlined onClick={clearFilter} />
             </div>
             <div className='sortBox'>
-                <Dropdown
-                    menu={{
-                        items,
+                <TreeSelect
+                    style={{
+                        width: '100%',
                     }}
-                >
-                    <p onClick={(e) => e.preventDefault()}>
-                        <Space>
-                            مرتب سازی
-                            <DownOutlined />
-                        </Space>
-                    </p>
-                </Dropdown>
+                    value={sortConfig}
+                    dropdownStyle={{
+                        maxHeight: 400,
+                        overflow: 'auto',
+                    }}
+                    treeData={treeDataSort}
+                    placeholder="مرتب سازی براساس..."
+                    treeDefaultExpandAll
+                    onChange={onChangeSort}
+                />
             </div>
             <div className='listBox'>
                 {
@@ -181,8 +233,10 @@ function Home() {
                                 return true;
                             }
                         })
+                            .sort((a,b)=>sortListSetting(a,b))
                             .map((book) => {
-                                //console.log(book)
+                                console.log(book)
+                                console.log(book.rating)
                                 return (
                                     <BookCard
                                         coverUri={book.coverUri}
