@@ -6,7 +6,7 @@ function DisplayRating({ rating }) {
     const [starRate, setStarRate] = useState([0,0,0,0,0])
 
     useEffect(()=>{
-        console.log(rating)
+        //console.log(rating)
         showRating(rating)
     },[rating])
 

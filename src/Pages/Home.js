@@ -1,15 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { getBookList } from '../utils/api';
+import { getBookListAPI } from '../utils/api';
 import BookCard from '../Components/BookList/BookCard/BookCard';
 import '../Style/Home.scss';
 import notify from "../Toastify/Toast";
-import { LoadingOutlined, ClearOutlined } from '@ant-design/icons';
+import { ClearOutlined } from '@ant-design/icons';
 import { Alert } from 'antd';
 import { Error_Messages } from '../utils/Errors/ErrorMessages';
 import { TreeSelect } from 'antd';
-import { DownOutlined, SmileOutlined } from '@ant-design/icons';
-import { Dropdown, Menu, Space } from 'antd';
-
+import Loading from '../Components/Common/Loading/Loading';
+import InfiniteScroll from 'react-infinite-scroll-component';
 
 const treeData = [
 
@@ -67,6 +66,8 @@ const treeDataSort = [
 
 function Home() {
     const [bookList, setBookList] = useState([]);
+    const [hasMore, setHasMore] = useState(true);
+    const [Offset,setOffset]=useState('0-0-16-16');
     const [isLoading, setIsLoading] = useState(false);
     const [isError, setIsError] = useState(false);
     const [bookType, setBookType] = useState('');
@@ -77,36 +78,36 @@ function Home() {
 
     const onChangeSort = (newValue) => {
         console.log(newValue);
-        const sortvalue={};
+        const sortvalue = {};
 
-        switch(newValue){
-            case 'ascPrice' :
-                sortvalue.type='asc';
-                sortvalue.basedOn='price';
-                setSortConfig({...sortvalue});
+        switch (newValue) {
+            case 'ascPrice':
+                sortvalue.type = 'asc';
+                sortvalue.basedOn = 'price';
+                setSortConfig({ ...sortvalue });
                 console.log(sortvalue)
                 break;
-            case 'ascRating' :
-                sortvalue.type='asc';
-                sortvalue.basedOn='rating';
-                setSortConfig({...sortvalue});
+            case 'ascRating':
+                sortvalue.type = 'asc';
+                sortvalue.basedOn = 'rating';
+                setSortConfig({ ...sortvalue });
                 console.log(sortvalue)
                 break;
-            case 'descPrice' :
-                sortvalue.type='des';
-                sortvalue.basedOn='price';
-                setSortConfig({...sortvalue});
+            case 'descPrice':
+                sortvalue.type = 'des';
+                sortvalue.basedOn = 'price';
+                setSortConfig({ ...sortvalue });
                 console.log(sortvalue)
                 break;
-            case 'descRating' :
-                sortvalue.type='des';
-                sortvalue.basedOn='rating';
-                setSortConfig({...sortvalue});
+            case 'descRating':
+                sortvalue.type = 'des';
+                sortvalue.basedOn = 'rating';
+                setSortConfig({ ...sortvalue });
                 console.log(sortvalue)
                 break;
         }
     };
-    
+
 
     useEffect(() => {
         console.log('bookType', bookType)
@@ -142,16 +143,20 @@ function Home() {
     };
 
     const getbookList = async () => {
-        setIsLoading(true)
+        // setIsLoading(true)
         try {
-            const books = await getBookList()
-            //console.log([...books])
-            setIsLoading(false)
-            setBookList([...books])
+            const ApiResponse = await getBookListAPI(Offset)
+            console.log(ApiResponse)
+            const NewbookList=bookList.append(ApiResponse.bookList.books)
+            console.log([...NewbookList])
+            setHasMore(ApiResponse.hasMore)
+            setOffset(ApiResponse.nextOffset)
+            //setIsLoading(false)
+            setBookList([...ApiResponse.bookList.books])
             console.log([...bookList])
 
         } catch (error) {
-            setIsLoading(false)
+            //setIsLoading(false)
             console.log(error)
             error.code === 'ERR_NETWORK' ? setIsError(true) :
                 notify(error.message, "error");
@@ -162,17 +167,17 @@ function Home() {
         setBookType('')
         console.log(bookType)
     }
-    const sortListSetting=(a,b)=>{
+    const sortListSetting = (a, b) => {
 
-        switch(true){
-            case(sortConfig.type==='asc' && sortConfig.basedOn==='price'):
-                return a.price-b.price;
-            case(sortConfig.type==='asc' && sortConfig.basedOn==='rating'):
-                return a.rating-b.rating;
-            case(sortConfig.type==='des' && sortConfig.basedOn==='price'):
-                return b.price-a.price;
-            case(sortConfig.type==='des' && sortConfig.basedOn==='rating'):
-                return b.rating-a.rating;
+        switch (true) {
+            case (sortConfig.type === 'asc' && sortConfig.basedOn === 'price'):
+                return a.price - b.price;
+            case (sortConfig.type === 'asc' && sortConfig.basedOn === 'rating'):
+                return a.rating - b.rating;
+            case (sortConfig.type === 'des' && sortConfig.basedOn === 'price'):
+                return b.price - a.price;
+            case (sortConfig.type === 'des' && sortConfig.basedOn === 'rating'):
+                return b.rating - a.rating;
         }
 
     }
@@ -211,50 +216,51 @@ function Home() {
                     onChange={onChangeSort}
                 />
             </div>
-            <div className='listBox'>
+
+            <InfiniteScroll
+                dataLength={bookList.length} //This is important field to render the next data
+                next={getbookList}
+                hasMore={hasMore}
+                loader={<Loading />}
+            >
                 {
-                    isLoading ?
-                        <div className='loadingFrame'>
-                            <LoadingOutlined />
-                            <p>لیست کتابها در حال بارگذاری است...</p>
-                        </div> :
-                        bookList.filter((book) => {
-                            if (bookType && book.type === 'Text') {
-                                if (bookType === 'Text') {
-                                    return true
-                                }
-                                const bookTypePerBook = determineFileType(book);
-                                return bookTypePerBook === bookType
-
-                            } else if (bookType && book.type === 'Voice') {
-                                return book.type === bookType
-
-                            } else {
-                                return true;
+                    bookList.filter((book) => {
+                        if (bookType && book.type === 'Text') {
+                            if (bookType === 'Text') {
+                                return true
                             }
-                        })
-                            .sort((a,b)=>sortListSetting(a,b))
-                            .map((book) => {
-                                console.log(book)
-                                console.log(book.rating)
-                                return (
-                                    <BookCard
-                                        coverUri={book.coverUri}
-                                        title={book.title}
-                                        authors={book.authors}
-                                        price={book.price}
-                                        rating={book.rating}
-                                        publisher={book.publisher}
-                                        physicalPrice={book.physicalPrice}
-                                        numberOfPages={book.numberOfPages}
-                                        description={book.description}
-                                        id={book.id}
-                                    />
-                                )
+                            const bookTypePerBook = determineFileType(book);
+                            return bookTypePerBook === bookType
 
-                            })
+                        } else if (bookType && book.type === 'Voice') {
+                            return book.type === bookType
+
+                        } else {
+                            return true;
+                        }
+                    })
+                        .sort((a, b) => sortListSetting(a, b))
+                        .map((book) => {
+                            console.log(book)
+                            console.log(book.rating)
+                            return (
+                                <BookCard
+                                    coverUri={book.coverUri}
+                                    title={book.title}
+                                    authors={book.authors}
+                                    price={book.price}
+                                    rating={book.rating}
+                                    publisher={book.publisher}
+                                    physicalPrice={book.physicalPrice}
+                                    numberOfPages={book.numberOfPages}
+                                    description={book.description}
+                                    id={book.id}
+                                />
+                            )
+
+                        })
                 }
-            </div>
+            </InfiniteScroll>
 
             {
                 isError && <Alert
@@ -262,7 +268,7 @@ function Home() {
                     description={Error_Messages.NETWORK_CONNECTION_ERROR.fa}
                     type="error" />
             }
-        </div>
+        </div >
     )
 }
 
