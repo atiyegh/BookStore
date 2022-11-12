@@ -1,8 +1,12 @@
+//Hooks and Custom Components
 import React, { useEffect,useState } from 'react';
+
+//Styles
 import '../Style/Common.scss';
 import {StarFilled,StarOutlined} from '@ant-design/icons';
 
 function DisplayRating({ rating }) {
+    //States
     const [starRate, setStarRate] = useState([0,0,0,0,0])
 
     useEffect(()=>{
@@ -10,6 +14,8 @@ function DisplayRating({ rating }) {
         showRating(rating)
     },[rating])
 
+
+    //Setting display of rating with stars
     const showRating = (rating) => {
         switch (true) {
             case (rating >= 1 && rating < 2) :

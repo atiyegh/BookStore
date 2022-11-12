@@ -1,18 +1,20 @@
+//Hooks and Custom Components
 import React, { useEffect,useState } from 'react';
-import './BookCard.scss';
-import { StarOutlined, StarFilled } from '@ant-design/icons';
 import {useNavigate} from 'react-router-dom';
 import DisplayRating from '../../../utils/DisplayRating';
+
+//Style
+import './BookCard.scss';
 
 function BookCard({ coverUri, title, authors, price, rating,
     publisher,physicalPrice,numberOfPages,description ,id}) {
 
-
-    //console.log(coverUri, title, authours, price, rating)
     let navigate = useNavigate();
+
     useEffect(()=>{
         //console.log(rating)
     },[rating])
+
 
     const navToDetailBook=()=>{
         navigate(`/${id}`, { state: {
@@ -27,7 +29,6 @@ function BookCard({ coverUri, title, authors, price, rating,
             description,
             id
         }});
-        //console.log(id)
     }
 
     
@@ -55,7 +56,6 @@ function BookCard({ coverUri, title, authors, price, rating,
                 <span>قیمت: </span>
                 {price}
             </div>
-
             <DisplayRating rating={rating}/>
         </div>
     )

@@ -1,18 +1,20 @@
-import React, { useEffect, useState } from 'react'
-import { useLocation } from 'react-router-dom'
+//Hooks and Custom Components
+import React, { useEffect} from 'react';
+import { useLocation } from 'react-router-dom';
 import DisplayRating from '../utils/DisplayRating';
+
+//Styles
 import '../Style/BookDetail.scss';
-import { Link } from 'react-router-dom';
+
 
 function DetailedPage() {
+    //State
     let book = useLocation().state;
     let location = useLocation();
 
     useEffect(() => {
-        console.log('book', book)
-        console.log('location', location.state)
-        console.log(book.authors)
-        console.log(book.coverUri)
+        // console.log('book', book)
+        // console.log('location', location.state)
     }, [])
 
     return (

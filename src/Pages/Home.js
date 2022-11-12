@@ -1,15 +1,19 @@
+//Hooks and Custom Components
 import React, { useEffect, useState } from 'react';
+import InfiniteScroll from 'react-infinite-scroll-component';
 import { getBookListAPI } from '../utils/api';
+import { Error_Messages } from '../utils/Errors/ErrorMessages';
+import Loading from '../Components/Common/Loading/Loading';
 import BookCard from '../Components/BookList/BookCard/BookCard';
+
+//Style
 import '../Style/Home.scss';
 import notify from "../Toastify/Toast";
-import { ClearOutlined } from '@ant-design/icons';
 import { Alert } from 'antd';
-import { Error_Messages } from '../utils/Errors/ErrorMessages';
 import { TreeSelect } from 'antd';
-import Loading from '../Components/Common/Loading/Loading';
-import InfiniteScroll from 'react-infinite-scroll-component';
+import { ClearOutlined } from '@ant-design/icons';
 
+//Filters and Sort Values
 const treeData = [
 
     {
@@ -65,9 +69,8 @@ const treeDataSort = [
 
 
 function Home() {
+    //States
     const [bookList, setBookList] = useState([]);
-    const [hasMore, setHasMore] = useState(true);
-    const [Offset, setOffset] = useState('0-0-16-16');
     const [isLoading, setIsLoading] = useState(false);
     const [isError, setIsError] = useState(false);
     const [bookType, setBookType] = useState('');
@@ -75,7 +78,58 @@ function Home() {
         type: '',
         basedOn: ''
     })
+    const [hasMore, setHasMore] = useState(true);
+    const [Offset, setOffset] = useState('0-0-16-16');
 
+    //useEffects
+    useEffect(() => {
+        getbookList();
+    }, [])
+
+
+    //Methods
+    
+    //Getting list of books
+    const getbookList = async () => {
+        setIsLoading(true)
+        try {
+            const ApiResponse = await getBookListAPI(Offset)
+            //setIsLoading(false)
+            const NewbookList = bookList.concat(ApiResponse.bookList.books)
+            setHasMore(ApiResponse.hasMore)
+            setOffset(ApiResponse.nextOffset)
+            setBookList([...NewbookList])
+            console.log([...bookList])
+
+        } catch (error) {
+            //setIsLoading(false)
+            console.log(error)
+            error.code === 'ERR_NETWORK' ? setIsError(true) :
+            notify(error.message, "error");
+        }
+        finally{
+            setIsLoading(false)
+        }
+    }
+
+    //Sort setting methods
+
+    //Execute sorting list
+    const sortListSetting = (a, b) => {
+        switch (true) {
+            case (sortConfig.type === 'asc' && sortConfig.basedOn === 'price'):
+                return a.price - b.price;
+            case (sortConfig.type === 'asc' && sortConfig.basedOn === 'rating'):
+                return a.rating - b.rating;
+            case (sortConfig.type === 'des' && sortConfig.basedOn === 'price'):
+                return b.price - a.price;
+            case (sortConfig.type === 'des' && sortConfig.basedOn === 'rating'):
+                return b.rating - a.rating;
+        }
+
+    }
+
+    //Set sort criteria
     const onChangeSort = (newValue) => {
         console.log(newValue);
         const sortvalue = {};
@@ -109,78 +163,32 @@ function Home() {
     };
 
 
-    useEffect(() => {
-        getbookList();
-    }, [])
-
-
+    //Filter setting methods
+    const changeBookType = (newValue) => {
+        setBookType(newValue);
+    };
 
     const determineFileType = (book) => {
         let fileTypeBook = '';
         const getbooksFileType = (book) => {
-
             const files = book.files.filter((file) => file.type === 3)
-            //console.log(files)
             if (files.length > 0) {
                 fileTypeBook = 'epub'
-                //console.log(fileTypeBook)
             } else {
                 fileTypeBook = 'pdf'
-                //console.log(fileTypeBook)
             }
         }
         getbooksFileType(book);
-
         return fileTypeBook
-
     };
 
-    const changeBookType = (newValue) => {
-        setBookType(newValue);
-        console.log(bookType);
-        console.log(newValue);
-    };
-
-    const getbookList = async () => {
-        setIsLoading(true)
-        try {
-            const ApiResponse = await getBookListAPI(Offset)
-            //setIsLoading(false)
-            const NewbookList = bookList.concat(ApiResponse.bookList.books)
-            setHasMore(ApiResponse.hasMore)
-            setOffset(ApiResponse.nextOffset)
-            setBookList([...NewbookList])
-            console.log([...bookList])
-
-        } catch (error) {
-            //setIsLoading(false)
-            console.log(error)
-            error.code === 'ERR_NETWORK' ? setIsError(true) :
-            notify(error.message, "error");
-        }
-        finally{
-            setIsLoading(false)
-        }
-    }
-
+    //clear filter method
     const clearFilter = () => {
         setBookType('')
         console.log(bookType)
     }
-    const sortListSetting = (a, b) => {
 
-        switch (true) {
-            case (sortConfig.type === 'asc' && sortConfig.basedOn === 'price'):
-                return a.price - b.price;
-            case (sortConfig.type === 'asc' && sortConfig.basedOn === 'rating'):
-                return a.rating - b.rating;
-            case (sortConfig.type === 'des' && sortConfig.basedOn === 'price'):
-                return b.price - a.price;
-            case (sortConfig.type === 'des' && sortConfig.basedOn === 'rating'):
-                return b.rating - a.rating;
-        }
 
-    }
     return (
         <div className='container'>
             <div className='Filterbox'>
@@ -219,10 +227,9 @@ function Home() {
             
             <div className='listBox'>
                 <InfiniteScroll
-                    dataLength={bookList.length} //This is important field to render the next data
+                    dataLength={bookList.length} 
                     next={getbookList}
                     hasMore={hasMore}
-                    //loader={<Loading />}
                 >
                     {
                         bookList.filter((book) => {

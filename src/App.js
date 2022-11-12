@@ -1,7 +1,12 @@
+//Hooks and Custom Components
 import React,{Suspense} from 'react'
 import { Routes, Route } from 'react-router-dom'
-import Home from './Pages/Home';
+
+//Styles
 import 'antd/dist/antd.css';
+
+
+//Lazy loading 
 const HomePage=React.lazy(()=>import('./Pages/Home'));
 const DetailedPage=React.lazy(()=>import('./Pages/DetailedPage'));
 
