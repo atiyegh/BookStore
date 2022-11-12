@@ -145,7 +145,7 @@ function Home() {
         setIsLoading(true)
         try {
             const ApiResponse = await getBookListAPI(Offset)
-            setIsLoading(false)
+            //setIsLoading(false)
             const NewbookList = bookList.concat(ApiResponse.bookList.books)
             setHasMore(ApiResponse.hasMore)
             setOffset(ApiResponse.nextOffset)
@@ -153,10 +153,13 @@ function Home() {
             console.log([...bookList])
 
         } catch (error) {
-            setIsLoading(false)
+            //setIsLoading(false)
             console.log(error)
             error.code === 'ERR_NETWORK' ? setIsError(true) :
             notify(error.message, "error");
+        }
+        finally{
+            setIsLoading(false)
         }
     }
 
@@ -260,6 +263,7 @@ function Home() {
                     }
                 </InfiniteScroll>
                 {isLoading && <Loading />}
+                {!hasMore && <p>شما به انتهای لیست رسیده اید...</p>}
             </div>
 
             {
