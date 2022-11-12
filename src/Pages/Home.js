@@ -67,7 +67,7 @@ const treeDataSort = [
 function Home() {
     const [bookList, setBookList] = useState([]);
     const [hasMore, setHasMore] = useState(true);
-    const [Offset,setOffset]=useState('0-0-16-16');
+    const [Offset, setOffset] = useState('0-0-16-16');
     const [isLoading, setIsLoading] = useState(false);
     const [isError, setIsError] = useState(false);
     const [bookType, setBookType] = useState('');
@@ -110,7 +110,6 @@ function Home() {
 
 
     useEffect(() => {
-        console.log('bookType', bookType)
         getbookList();
     }, [])
 
@@ -143,23 +142,21 @@ function Home() {
     };
 
     const getbookList = async () => {
-        // setIsLoading(true)
+        setIsLoading(true)
         try {
             const ApiResponse = await getBookListAPI(Offset)
-            console.log(ApiResponse)
-            const NewbookList=bookList.append(ApiResponse.bookList.books)
-            console.log([...NewbookList])
+            setIsLoading(false)
+            const NewbookList = bookList.concat(ApiResponse.bookList.books)
             setHasMore(ApiResponse.hasMore)
             setOffset(ApiResponse.nextOffset)
-            //setIsLoading(false)
-            setBookList([...ApiResponse.bookList.books])
+            setBookList([...NewbookList])
             console.log([...bookList])
 
         } catch (error) {
-            //setIsLoading(false)
+            setIsLoading(false)
             console.log(error)
             error.code === 'ERR_NETWORK' ? setIsError(true) :
-                notify(error.message, "error");
+            notify(error.message, "error");
         }
     }
 
@@ -216,51 +213,54 @@ function Home() {
                     onChange={onChangeSort}
                 />
             </div>
+            
+            <div className='listBox'>
+                <InfiniteScroll
+                    dataLength={bookList.length} //This is important field to render the next data
+                    next={getbookList}
+                    hasMore={hasMore}
+                    //loader={<Loading />}
+                >
+                    {
+                        bookList.filter((book) => {
+                            if (bookType && book.type === 'Text') {
+                                if (bookType === 'Text') {
+                                    return true
+                                }
+                                const bookTypePerBook = determineFileType(book);
+                                return bookTypePerBook === bookType
 
-            <InfiniteScroll
-                dataLength={bookList.length} //This is important field to render the next data
-                next={getbookList}
-                hasMore={hasMore}
-                loader={<Loading />}
-            >
-                {
-                    bookList.filter((book) => {
-                        if (bookType && book.type === 'Text') {
-                            if (bookType === 'Text') {
-                                return true
+                            } else if (bookType && book.type === 'Voice') {
+                                return book.type === bookType
+
+                            } else {
+                                return true;
                             }
-                            const bookTypePerBook = determineFileType(book);
-                            return bookTypePerBook === bookType
-
-                        } else if (bookType && book.type === 'Voice') {
-                            return book.type === bookType
-
-                        } else {
-                            return true;
-                        }
-                    })
-                        .sort((a, b) => sortListSetting(a, b))
-                        .map((book) => {
-                            console.log(book)
-                            console.log(book.rating)
-                            return (
-                                <BookCard
-                                    coverUri={book.coverUri}
-                                    title={book.title}
-                                    authors={book.authors}
-                                    price={book.price}
-                                    rating={book.rating}
-                                    publisher={book.publisher}
-                                    physicalPrice={book.physicalPrice}
-                                    numberOfPages={book.numberOfPages}
-                                    description={book.description}
-                                    id={book.id}
-                                />
-                            )
-
                         })
-                }
-            </InfiniteScroll>
+                            .sort((a, b) => sortListSetting(a, b))
+                            .map((book) => {
+                                console.log(book)
+                                console.log(book.rating)
+                                return (
+                                    <BookCard
+                                        coverUri={book.coverUri}
+                                        title={book.title}
+                                        authors={book.authors}
+                                        price={book.price}
+                                        rating={book.rating}
+                                        publisher={book.publisher}
+                                        physicalPrice={book.physicalPrice}
+                                        numberOfPages={book.numberOfPages}
+                                        description={book.description}
+                                        id={book.id}
+                                    />
+                                )
+
+                            })
+                    }
+                </InfiniteScroll>
+                {isLoading && <Loading />}
+            </div>
 
             {
                 isError && <Alert

@@ -30,18 +30,19 @@
         width: 100%;
     }
 
-    .infinite-scroll-component {
+
+    .listBox {
         display: flex;
         justify-content: center;
         align-items: center;
-        flex-wrap: wrap;
+        flex-direction: column;
 
-        // .listBox {
-        //     display: flex;
-        //     justify-content: center;
-        //     align-items: center;
-        //     flex-wrap: wrap;
-        // }
+        .infinite-scroll-component {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;     
+        }
     }
 }
 
